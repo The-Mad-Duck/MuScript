@@ -21,9 +21,6 @@ void Parser::updateLogic(std::string s)
 	resetTable();
 	std::replace(s.begin(), s.end(), '\n', ' ');
 	if (s.size() < 2) { return; }
-	/*
-	if ((s.at(s.size() - 2) != ' '))
-		s.push_back(' '); */
 	std::stringstream ss(s);
 	std::vector<std::string> vstrings{};
 	vstrings.empty();
@@ -44,21 +41,11 @@ void Parser::updateLogic(std::string s)
 		int a, b, c, d = 0;
 		float e;
 		//op logic
-		
-		/*
-		if (vstrings[i].size() != 4)
-		{
-			values.empty();
-			return;
-		}
-		*/
 		if(!(vstrings[i].size() > 2 && vstrings[i+1].size() > 0 && vstrings[i + 2].size() > 0 && vstrings[i + 3].size() > 0))
 		{
 			values.clear(); return;
 		}
-		
-		
-		for (int j = 0; (j < 11 && found != true); j++)
+		for (int j = 0; (j < 13 && found != true); j++)
 		{
 			if (ops[j] == vstrings[i]){ a = j; found = true; }
 		}
@@ -97,6 +84,10 @@ void Parser::updateLogic(std::string s)
 		}
 		else if (vstrings[i + 3].at(0) == '@') {
 			d = 26;
+		}
+		else if ((a == 11 || a == 12) && std::regex_match(vstrings[i + 3], intRegex))			//conditional result for jil and jig
+		{
+			d = std::stoi(vstrings[i + 3]);
 		}
 		else { values.clear(); return; }
 

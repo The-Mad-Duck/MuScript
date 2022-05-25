@@ -152,51 +152,69 @@ void MuScriptAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
         updateNeeded = false;
     }
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    for (int channel = 0; (channel < totalNumInputChannels && !updateNeeded); ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
         for (int sample = 0; sample < buffer.getNumSamples(); sample++)
         {
             parse.alphaVals[26] = channelData[sample];
-            for (int i = 0; (i < parse.values.size()); i++)
+            for (int i = 0; (i < parse.values.size() && i >= 0 && !updateNeeded); i++)   //this is so you can exit with a negative number
             {
                 switch (parse.values[i].op)
                 {
                     case 0:             //assignment
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a2]);
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a2]);
                         break;
                     case 1:             //add
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] + parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] + parse.alphaVals[parse.values[i].a2]);
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] + parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] + parse.alphaVals[parse.values[i].a2]);
                         break;
                     case 2:             //subtract
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] - parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] - parse.alphaVals[parse.values[i].a2]);
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] - parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] - parse.alphaVals[parse.values[i].a2]);
                         break;
                     case 3:             //mult
-                        (parse.values[i].type == true) ? parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] * parse.values[i].a2f : parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] * parse.alphaVals[parse.values[i].a2];
+                        (parse.values[i].type) ? parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] * parse.values[i].a2f : parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] * parse.alphaVals[parse.values[i].a2];
                         break;
                     case 4:             //divide
-                        if(abs((parse.values[i].type == true) ? parse.values[i].getFloat() : parse.alphaVals[parse.values[i].a2]) > 0)
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] / parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] / parse.alphaVals[parse.values[i].a2]);
+                        if(abs((parse.values[i].type) ? parse.values[i].getFloat() : parse.alphaVals[parse.values[i].a2]) > 0)
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] / parse.values[i].getFloat()) : (parse.alphaVals[parse.values[i].rt] = parse.alphaVals[parse.values[i].a1] / parse.alphaVals[parse.values[i].a2]);
                         break;
                     case 5:             //modulo
-                        if (abs((parse.values[i].type == true) ? parse.values[i].getFloat() : parse.alphaVals[parse.values[i].a2]) > 0)
-                            (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = fmod(parse.alphaVals[parse.values[i].a1], parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = fmod(parse.alphaVals[parse.values[i].a1], parse.alphaVals[parse.values[i].a2]));
+                        if (abs((parse.values[i].type) ? parse.values[i].getFloat() : parse.alphaVals[parse.values[i].a2]) > 0)
+                            (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = fmod(parse.alphaVals[parse.values[i].a1], parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = fmod(parse.alphaVals[parse.values[i].a1], parse.alphaVals[parse.values[i].a2]));
                         break;
                     case 6:             //absolute value
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = abs(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = abs(parse.alphaVals[parse.values[i].a2]));
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = abs(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = abs(parse.alphaVals[parse.values[i].a2]));
                         break;
                     case 7:             //sine
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = std::sin(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::sin(parse.alphaVals[parse.values[i].a2]));
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = std::sin(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::sin(parse.alphaVals[parse.values[i].a2]));
                         break;
                     case 8:             //cosine
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = std::cos(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::cos(parse.alphaVals[parse.values[i].a2]));
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = std::cos(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::cos(parse.alphaVals[parse.values[i].a2]));
                         break;
                     case 9:             //tangent
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = std::tan(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::tan(parse.alphaVals[parse.values[i].a2]));
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = std::tan(parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::tan(parse.alphaVals[parse.values[i].a2]));
+                        if(i < 0)
                         break;
                     case 10:            //power
-                        (parse.values[i].type == true) ? (parse.alphaVals[parse.values[i].rt] = std::pow(parse.alphaVals[parse.values[i].a1], parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::pow(parse.alphaVals[parse.values[i].a1], parse.alphaVals[parse.values[i].a2]));
+                        (parse.values[i].type) ? (parse.alphaVals[parse.values[i].rt] = std::pow(parse.alphaVals[parse.values[i].a1], parse.values[i].getFloat())) : (parse.alphaVals[parse.values[i].rt] = std::pow(parse.alphaVals[parse.values[i].a1], parse.alphaVals[parse.values[i].a2]));
                         break;
+                    case 11:            //jump if less than
+                        if (parse.values[i].type) {
+                            if (parse.alphaVals[parse.values[i].a1] < parse.values[i].getFloat())
+                                i = parse.values[i].rt;}
+                        else
+                            if (parse.alphaVals[parse.values[i].a1] < parse.alphaVals[parse.values[i].a2])
+                                i = parse.values[i].rt;
+                        break;
+                    case 12:            //jump if greater than
+                        if (parse.values[i].type){
+                            if (parse.alphaVals[parse.values[i].a1] > parse.values[i].getFloat())
+                                i = parse.values[i].rt;}
+                        else
+                            if (parse.alphaVals[parse.values[i].a1] > parse.alphaVals[parse.values[i].a2])
+                                i = parse.values[i].rt;
+                        break;
+                        
                     default:            //nothing lmfao
                         break;
                 }

@@ -26,13 +26,13 @@ MuScriptAudioProcessorEditor::MuScriptAudioProcessorEditor (MuScriptAudioProcess
     String fonts = ("Consolas");
     Font font(fonts, 16.0f, juce::Font::bold);
     inputText.setFont(font);
+    inputText.setMultiLine(true, true);
     if(audioProcessor.s.size() > 1)
         inputText.setText(audioProcessor.s);
     inputText.setReturnKeyStartsNewLine(true);
-    inputText.setMultiLine(true, false);
     inputText.setColour(juce::Label::backgroundColourId, juce::Colours::darkblue);
     inputText.addListener(&listener);
-    inputText.onTextChange = [&] {audioProcessor.s = inputText.getText().toStdString(); audioProcessor.parse.resetTable(); audioProcessor.updateNeeded = true; };
+    inputText.onTextChange = [&] {audioProcessor.s = inputText.getText().toStdString(); audioProcessor.updateNeeded = true; };
 
 }
 

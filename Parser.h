@@ -8,7 +8,7 @@
 #include <algorithm>
 
 static const std::regex doubleRegex{ R"(^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$)" };
-static const std::regex intRegex{ R"(\d+)" };
+static const std::regex intRegex{ R"(^[+-]?([0-9]+))" };
 static const std::regex identRegex{ R"([a-z])" };
 
 struct chunkVal
@@ -42,7 +42,7 @@ public:
     float alphaVals[27] = { 0 };
 
     void operator = (const Parser& P);
-    std::string ops[11] = { "agn", "add", "sub", "mlt", "div", "mod", "abs", "sin", "cos", "tan", "pow"};
+    std::string ops[13] = { "agn", "add", "sub", "mlt", "div", "mod", "abs", "sin", "cos", "tan", "pow", "jil", "jig"};
 
     void resetAlpha()
     {

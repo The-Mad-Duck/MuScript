@@ -59,7 +59,7 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     bool updateNeeded = false;
-    std::string s;
+    std::string s = "";
     Parser parse;
 
     std::string value;
