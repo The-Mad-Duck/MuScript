@@ -39,6 +39,8 @@ Value a is not used, but assigns the tangent of b to c.
 pow a b c
 c is set to the output of a to the power of b.
 
+--== NEW AS OF 1.1 ==--
+
 jil a b c
 jumps to line c if a is less than b.
 
